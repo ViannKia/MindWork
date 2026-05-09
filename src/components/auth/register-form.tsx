@@ -1,6 +1,7 @@
 "use client";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   CardContent,
@@ -10,40 +11,50 @@ import {
   CardDescription,
 } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Loader2 } from "lucide-react";
+import { Loader2, User } from "lucide-react";
 import { EmailInput } from "@/components/shared/email-input";
 import { PasswordInput } from "@/components/shared/password-input";
+import { TextInput } from "@/components/shared/text-input";
 import { AuthCard } from "./auth-card";
 import { useAuth } from "@/hooks/use-auth";
-import { loginSchema, type LoginInput } from "@/lib/validations/auth-schema";
+import {
+  registerSchema,
+  type RegisterInput,
+} from "@/lib/validations/auth-schema";
 
-interface LoginFormProps {
+interface RegisterFormProps {
   onToggleMode: () => void;
   isTransitioning: boolean;
 }
 
-export function LoginForm({ onToggleMode, isTransitioning }: LoginFormProps) {
-  const { login, loading, error, setError } = useAuth();
+export function RegisterForm({
+  onToggleMode,
+  isTransitioning,
+}: RegisterFormProps) {
+  const { register: registerUser, loading, error, setError } = useAuth();
+  const [successMsg, setSuccessMsg] = useState("");
 
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<LoginInput>({
-    resolver: zodResolver(loginSchema),
+    reset,
+  } = useForm<RegisterInput>({
+    resolver: zodResolver(registerSchema),
   });
 
-  const onSubmit = async (data: LoginInput) => {
-    const result = await login(data);
-
-    if (result.success) {
-      // Login sukses
-      window.location.href = "/dashboard";
-    } else {
-      // Login gagal, kasih pesan error
-      setError(result.message);
+  const onSubmit = async (data: RegisterInput) => {
+    setSuccessMsg("");
+    const result = await registerUser(data);
+    if (result?.success) {
+      setSuccessMsg(result.message);
+      setTimeout(() => {
+        onToggleMode();
+        reset();
+      }, 2000);
     }
   };
+
   return (
     <AuthCard isTransitioning={isTransitioning}>
       <form onSubmit={handleSubmit(onSubmit)}>
@@ -52,19 +63,34 @@ export function LoginForm({ onToggleMode, isTransitioning }: LoginFormProps) {
             <span className="text-2xl">🧠</span>
           </div>
           <CardTitle className="text-3xl font-bold tracking-tight">
-            MindWork
+            Daftar Akun
           </CardTitle>
           <CardDescription className="text-sm font-medium">
-            Masuk untuk melanjutkan bekerja
+            Buat akun baru untuk mulai menggunakan MindWork
           </CardDescription>
         </CardHeader>
 
         <CardContent className="space-y-4">
-          {error && (
-            <Alert variant="destructive">
-              <AlertDescription>{error}</AlertDescription>
+          {(error || successMsg) && (
+            <Alert
+              variant={error ? "destructive" : "default"}
+              className={
+                successMsg ? "border-green-500 bg-green-50 text-green-700" : ""
+              }
+            >
+              <AlertDescription>{error || successMsg}</AlertDescription>
             </Alert>
           )}
+
+          <TextInput
+            id="fullName"
+            label="Nama Lengkap"
+            icon={User}
+            placeholder="John Doe"
+            error={errors.fullName?.message}
+            disabled={loading}
+            {...register("fullName")}
+          />
 
           <EmailInput
             error={errors.email?.message}
@@ -75,8 +101,13 @@ export function LoginForm({ onToggleMode, isTransitioning }: LoginFormProps) {
           <PasswordInput
             error={errors.password?.message}
             disabled={loading}
-            showForgot
             {...register("password")}
+          />
+
+          <PasswordInput
+            error={errors.confirmPassword?.message}
+            disabled={loading}
+            {...register("confirmPassword")}
           />
         </CardContent>
 
@@ -87,7 +118,7 @@ export function LoginForm({ onToggleMode, isTransitioning }: LoginFormProps) {
             disabled={loading}
           >
             {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            Masuk
+            Daftar
           </Button>
 
           <div className="relative w-full">
@@ -108,7 +139,7 @@ export function LoginForm({ onToggleMode, isTransitioning }: LoginFormProps) {
             onClick={onToggleMode}
             disabled={loading}
           >
-            Belum punya akun? Daftar
+            Sudah punya akun? Masuk
           </Button>
         </CardFooter>
       </form>
