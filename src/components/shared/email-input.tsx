@@ -25,6 +25,7 @@ export const EmailInput = forwardRef<HTMLInputElement, EmailInputProps>(
             className={cn("pl-9 py-3 rounded-xl", error && "border-red-500", className)}
             disabled={disabled}
             ref={ref}
+            autoComplete="off"
             {...props}
           />
         </div>

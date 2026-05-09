@@ -1,26 +1,29 @@
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
+import { AUTH_DELAY_MS } from "@/lib/constants";
 import type { LoginInput, RegisterInput } from "@/lib/validations/auth-schema";
 
 export function useAuth() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const router = useRouter();
 
   const login = async (data: LoginInput) => {
     setLoading(true);
     setError(null);
     
     try {
+      // Delay hanya di development (simulasi network request)
+      if (AUTH_DELAY_MS > 0) {
+        await new Promise(resolve => setTimeout(resolve, AUTH_DELAY_MS));
+      }
+      
       const { error } = await supabase.auth.signInWithPassword({
         email: data.email,
         password: data.password,
       });
       if (error) throw error;
-      console.log("Login success, redirecting...");
-      router.push("/dashboard");
-      router.refresh();
+      
+      window.location.href = "/dashboard";
       return { success: true };
     } catch (err: any) {
       setError(err.message);
@@ -35,6 +38,11 @@ export function useAuth() {
     setError(null);
     
     try {
+      // Delay hanya di development
+      if (AUTH_DELAY_MS > 0) {
+        await new Promise(resolve => setTimeout(resolve, AUTH_DELAY_MS));
+      }
+      
       const { error } = await supabase.auth.signUp({
         email: data.email,
         password: data.password,
@@ -43,7 +51,8 @@ export function useAuth() {
         },
       });
       if (error) throw error;
-      return { success: true, message: "Anda berhasil mendaftar!" };
+      
+      return { success: true, message: "✅ Pendaftaran berhasil! Silakan cek email untuk verifikasi." };
     } catch (err: any) {
       setError(err.message);
       return { success: false, message: err.message };

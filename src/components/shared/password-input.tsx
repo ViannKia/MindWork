@@ -8,22 +8,26 @@ import { cn } from "@/lib/utils";
 interface PasswordInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   error?: string;
   showForgot?: boolean;
+  label?: string;
 }
 
 export const PasswordInput = forwardRef<HTMLInputElement, PasswordInputProps>(
-  ({ error, className, disabled, showForgot, ...props }, ref) => {
+  (
+    { error, className, disabled, showForgot, label = "Password", ...props },
+    ref,
+  ) => {
     const [showPassword, setShowPassword] = useState(false);
 
     return (
-      <div className="space-y-2">
+      <div className={cn("space-y-2", className)}>
         <div className="flex items-center justify-between">
           <Label htmlFor="password" className="text-sm font-semibold">
-            Password
+            {label}
           </Label>
           {showForgot && (
             <button
               type="button"
-              className="text-xs font-medium text-muted-foreground hover:text-indigo-600 transition-colors"
+              className="text-xs font-medium text-muted-foreground hover:text-foreground/700 transition-colors cursor-pointer"
               onClick={() => alert("Fitur lupa password segera hadir!")}
             >
               Lupa password?
@@ -35,10 +39,15 @@ export const PasswordInput = forwardRef<HTMLInputElement, PasswordInputProps>(
           <Input
             id="password"
             type={showPassword ? "text" : "password"}
-            placeholder="••••••••"
-            className={cn("pl-9 pr-9 py-3 rounded-xl", error && "border-red-500", className)}
+            placeholder="••••••"
+            className={cn(
+              "pl-9 pr-9 py-3 rounded-xl",
+              error && "border-red-500",
+              className,
+            )}
             disabled={disabled}
             ref={ref}
+            autoComplete="new-password"
             {...props}
           />
           <button
@@ -46,13 +55,17 @@ export const PasswordInput = forwardRef<HTMLInputElement, PasswordInputProps>(
             onClick={() => setShowPassword(!showPassword)}
             className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
           >
-            {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+            {showPassword ? (
+              <EyeOff className="h-4 w-4" />
+            ) : (
+              <Eye className="h-4 w-4" />
+            )}
           </button>
         </div>
         {error && <p className="text-xs text-red-500">{error}</p>}
       </div>
     );
-  }
+  },
 );
 
 PasswordInput.displayName = "PasswordInput";

@@ -1,0 +1,1 @@
+export const AUTH_DELAY_MS = process.env.NODE_ENV === 'production' ? 0 : 3000;

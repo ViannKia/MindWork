@@ -59,13 +59,10 @@ export function RegisterForm({
     <AuthCard isTransitioning={isTransitioning}>
       <form onSubmit={handleSubmit(onSubmit)}>
         <CardHeader className="text-center space-y-2">
-          <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-r from-indigo-600 to-purple-600 shadow-lg">
-            <span className="text-2xl">🧠</span>
-          </div>
           <CardTitle className="text-3xl font-bold tracking-tight">
             Daftar Akun
           </CardTitle>
-          <CardDescription className="text-sm font-medium">
+          <CardDescription className="text-sm font-medium mb-3">
             Buat akun baru untuk mulai menggunakan MindWork
           </CardDescription>
         </CardHeader>
@@ -105,16 +102,17 @@ export function RegisterForm({
           />
 
           <PasswordInput
+            label="Confirm Password"
             error={errors.confirmPassword?.message}
             disabled={loading}
             {...register("confirmPassword")}
           />
         </CardContent>
 
-        <CardFooter className="flex flex-col space-y-3">
+        <CardFooter className="flex flex-col space-y-3 mt-4">
           <Button
             type="submit"
-            className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-semibold py-3 rounded-xl transition-all duration-200 transform hover:scale-[1.02]"
+            className="w-full bg-primary text-primary-foreground hover:bg-primary/90 font-semibold py-3 rounded-xl transition-all duration-200 transform hover:scale-[1.02]"
             disabled={loading}
           >
             {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
@@ -126,7 +124,7 @@ export function RegisterForm({
               <span className="w-full border-t" />
             </div>
             <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-background px-2 text-muted-foreground font-medium">
+              <span className="bg-transparent px-2 text-muted-foreground font-medium">
                 Atau
               </span>
             </div>
@@ -135,7 +133,7 @@ export function RegisterForm({
           <Button
             type="button"
             variant="outline"
-            className="w-full font-semibold py-3 rounded-xl"
+            className="w-full font-semibold py-3 rounded-xl transition-all hover:bg-muted/30 duration-200 transform hover:scale-[1.02]"
             onClick={onToggleMode}
             disabled={loading}
           >
