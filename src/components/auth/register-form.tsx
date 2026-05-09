@@ -71,9 +71,7 @@ export function RegisterForm({
           {(error || successMsg) && (
             <Alert
               variant={error ? "destructive" : "default"}
-              className={
-                successMsg ? "border-green-500 bg-green-50 text-green-700" : ""
-              }
+              className={`text-center ${successMsg ? "border-green-500 bg-green-50 text-green-700" : ""}`}
             >
               <AlertDescription>{error || successMsg}</AlertDescription>
             </Alert>

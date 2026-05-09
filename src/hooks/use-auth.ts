@@ -7,12 +7,22 @@ export function useAuth() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const getHumanReadableMessage = (message: string): string => {
+    const errorMap: Record<string, string> = {
+      "User already registered": "Email sudah terdaftar.",
+      "Invalid login credentials": "Email atau password salah.",
+      "Password should be at least 6 characters": "Password minimal 6 karakter.",
+      "Email not confirmed": "Email belum diverifikasi. Silakan cek inbox Anda.",
+    };
+    
+    return errorMap[message] || message;
+  };
+
   const login = async (data: LoginInput) => {
     setLoading(true);
     setError(null);
     
     try {
-      // Delay hanya di development (simulasi network request)
       if (AUTH_DELAY_MS > 0) {
         await new Promise(resolve => setTimeout(resolve, AUTH_DELAY_MS));
       }
@@ -26,8 +36,9 @@ export function useAuth() {
       window.location.href = "/dashboard";
       return { success: true };
     } catch (err: any) {
-      setError(err.message);
-      return { success: false, message: err.message };
+      const humanMessage = getHumanReadableMessage(err.message);
+      setError(humanMessage);
+      return { success: false, message: humanMessage };
     } finally {
       setLoading(false);
     }
@@ -38,7 +49,6 @@ export function useAuth() {
     setError(null);
     
     try {
-      // Delay hanya di development
       if (AUTH_DELAY_MS > 0) {
         await new Promise(resolve => setTimeout(resolve, AUTH_DELAY_MS));
       }
@@ -52,10 +62,11 @@ export function useAuth() {
       });
       if (error) throw error;
       
-      return { success: true, message: "✅ Pendaftaran berhasil! Silakan cek email untuk verifikasi." };
+      return { success: true, message: "Pendaftaran berhasil! Silakan cek email untuk verifikasi." };
     } catch (err: any) {
-      setError(err.message);
-      return { success: false, message: err.message };
+      const humanMessage = getHumanReadableMessage(err.message);
+      setError(humanMessage);
+      return { success: false, message: humanMessage };
     } finally {
       setLoading(false);
     }

@@ -1,5 +1,6 @@
 "use client";
 import { forwardRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import { Lock, Eye, EyeOff } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -17,9 +18,10 @@ export const PasswordInput = forwardRef<HTMLInputElement, PasswordInputProps>(
     ref,
   ) => {
     const [showPassword, setShowPassword] = useState(false);
+    const router = useRouter();
 
     return (
-      <div className={cn("space-y-2", className)}>
+      <div className="space-y-2">
         <div className="flex items-center justify-between">
           <Label htmlFor="password" className="text-sm font-semibold">
             {label}
@@ -27,8 +29,8 @@ export const PasswordInput = forwardRef<HTMLInputElement, PasswordInputProps>(
           {showForgot && (
             <button
               type="button"
-              className="text-xs font-medium text-muted-foreground hover:text-foreground/700 transition-colors cursor-pointer"
-              onClick={() => alert("Fitur lupa password segera hadir!")}
+              className="text-xs font-medium text-muted-foreground hover:text-primary transition-colors cursor-pointer"
+              onClick={() => router.push("/forgot-password")}
             >
               Lupa password?
             </button>
@@ -47,7 +49,6 @@ export const PasswordInput = forwardRef<HTMLInputElement, PasswordInputProps>(
             )}
             disabled={disabled}
             ref={ref}
-            autoComplete="new-password"
             {...props}
           />
           <button

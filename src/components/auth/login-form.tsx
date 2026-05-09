@@ -41,7 +41,7 @@ export function LoginForm({ onToggleMode, isTransitioning }: LoginFormProps) {
       window.location.href = "/dashboard";
     } else {
       // Login gagal, kasih pesan error
-      setError(result.message);
+      setError(result.message ?? null);
     }
   };
   return (
@@ -49,16 +49,16 @@ export function LoginForm({ onToggleMode, isTransitioning }: LoginFormProps) {
       <form onSubmit={handleSubmit(onSubmit)}>
         <CardHeader className="text-center space-y-2">
           <CardTitle className="text-3xl font-bold tracking-tight">
-            MindWork
+            Sign In
           </CardTitle>
           <CardDescription className="text-sm font-medium mb-3">
-            Masuk untuk melanjutkan bekerja
+            Gunakan akun yang sudah terdaftar
           </CardDescription>
         </CardHeader>
 
         <CardContent className="space-y-4">
           {error && (
-            <Alert variant="destructive">
+            <Alert variant="destructive" className="text-center">
               <AlertDescription>{error}</AlertDescription>
             </Alert>
           )}
