@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Montserrat, Lora, Fira_Code } from "next/font/google";
+import { Toaster } from "sonner";
 import "./globals.css";
 
 const fontSans = Montserrat({
@@ -31,6 +32,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${fontSans.variable} ${fontSerif.variable} ${fontMono.variable} antialiased`}>
         {children}
+        <Toaster position="top-right" richColors />
       </body>
     </html>
   );

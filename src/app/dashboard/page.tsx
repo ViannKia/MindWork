@@ -1,87 +1,106 @@
-"use client";
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import { supabase } from "@/lib/supabase";
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+'use client'
+
+import { useEffect, useState, useCallback } from 'react'
+import { useRouter } from 'next/navigation'
+import { supabase } from '@/lib/supabase'
+import { fetchCurrentProfile } from '@/lib/dashboard/queries'
+import { EmployeeDashboard } from '@/components/dashboard/employee/employee-dashboard'
+import { ManagerDashboard } from '@/components/dashboard/manager/manager-dashboard'
+import { AdminDashboard } from '@/components/dashboard/admin/admin-dashboard'
+import { ErrorState } from '@/components/dashboard/shared/error-state'
+import { LoadingSkeleton } from '@/components/dashboard/shared/loading-skeleton'
+import type { Profile } from '@/types/dashboard'
+
+type PageState =
+  | { status: 'loading' }
+  | { status: 'error'; message: string }
+  | { status: 'ready'; profile: Profile }
 
 export default function DashboardPage() {
-  const [user, setUser] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
-  const router = useRouter();
+  const router = useRouter()
+  const [state, setState] = useState<PageState>({ status: 'loading' })
 
-  useEffect(() => {
-    const getUser = async () => {
+  const loadProfile = useCallback(async () => {
+    setState({ status: 'loading' })
+    try {
       const {
         data: { user },
-      } = await supabase.auth.getUser();
+      } = await supabase.auth.getUser()
+
       if (!user) {
-        router.push("/login");
-      } else {
-        setUser(user);
+        router.push('/login')
+        return
       }
-      setLoading(false);
-    };
-    getUser();
-  }, [router]);
 
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
-    router.push("/login");
-  };
+      const profile = await fetchCurrentProfile(user.id)
 
-  if (loading) {
+      if (!['employee', 'manager', 'admin'].includes(profile.role)) {
+        setState({
+          status: 'error',
+          message: 'Role pengguna tidak valid. Mengarahkan ke halaman login...',
+        })
+        setTimeout(() => router.push('/login'), 3000)
+        return
+      }
+
+      setState({ status: 'ready', profile })
+    } catch {
+      setState({
+        status: 'error',
+        message: 'Gagal memuat profil pengguna. Periksa koneksi internet Anda.',
+      })
+    }
+  }, [router])
+
+  useEffect(() => {
+    loadProfile()
+  }, [loadProfile])
+
+  // ── Loading ──────────────────────────────────────────────────────────────────
+  if (state.status === 'loading') {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
+      <div className="min-h-screen bg-background">
+        <LoadingSkeleton variant="header" />
+        <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8 space-y-4">
+          <div className="grid gap-4 sm:grid-cols-2">
+            <LoadingSkeleton variant="card" />
+            <LoadingSkeleton variant="card" />
+          </div>
+          <LoadingSkeleton variant="card" />
+          <LoadingSkeleton variant="table" rows={5} />
+        </div>
       </div>
-    );
+    )
   }
 
-  return (
-    <div className="min-h-screen from-slate-100 to-slate-200 dark:from-slate-950 dark:to-slate-900 p-8">
-      <div className="max-w-4xl mx-auto">
-        <div className="flex justify-between items-center mb-8">
-          <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-r from-indigo-600 to-purple-600">
-              <span className="text-lg">🧠</span>
-            </div>
-            <h1 className="text-2xl font-bold">MindWork</h1>
-          </div>
-          <Button onClick={handleLogout} variant="outline">
-            Logout
-          </Button>
-        </div>
-
-        <Card className="border-0 shadow-xl">
-          <CardHeader>
-            <CardTitle>Dashboard</CardTitle>
-            <CardDescription>
-              Selamat datang di dashboard MindWork
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="p-4 bg-indigo-50 dark:bg-indigo-950 rounded-lg">
-              <p className="text-sm font-medium text-indigo-700 dark:text-indigo-300">
-                Email: {user?.email}
-              </p>
-              <p className="text-sm text-indigo-600 dark:text-indigo-400 mt-1">
-                Status: ✅ Terautentikasi
-              </p>
-            </div>
-            <p className="text-muted-foreground text-sm">
-              Dashboard masih dalam pengembangan. Fitur-fitur menarik akan
-              segera hadir!
-            </p>
-          </CardContent>
-        </Card>
+  // ── Error ────────────────────────────────────────────────────────────────────
+  if (state.status === 'error') {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-background p-4">
+        <ErrorState
+          message={state.message}
+          onRetry={loadProfile}
+          className="max-w-sm w-full"
+        />
       </div>
-    </div>
-  );
+    )
+  }
+
+  // ── Ready: conditional render by role ────────────────────────────────────────
+  const { profile } = state
+
+  if (profile.role === 'employee') {
+    return <EmployeeDashboard profile={profile} />
+  }
+
+  if (profile.role === 'manager') {
+    return <ManagerDashboard profile={profile} />
+  }
+
+  if (profile.role === 'admin') {
+    return <AdminDashboard profile={profile} />
+  }
+
+  // Fallback (should never reach here due to validation above)
+  return null
 }
