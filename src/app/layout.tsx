@@ -21,6 +21,9 @@ const fontMono = Fira_Code({
 export const metadata: Metadata = {
   title: "MindWork",
   description: "Platform produktivitas dan wellbeing untuk tim modern",
+  icons: {
+    icon: "/iconM.svg",
+  },
 };
 
 export default function RootLayout({
