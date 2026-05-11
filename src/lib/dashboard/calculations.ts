@@ -70,23 +70,25 @@ export function calculateProductivityScore(
 export function calculateStreak(logs: WellbeingLog[]): number {
   if (logs.length === 0) return 0
 
-  const today = new Date()
-  today.setHours(0, 0, 0, 0)
+  // Ambil semua tanggal unik, urutkan descending (terbaru di depan)
+  const dates = [...new Set(logs.map((l) => l.created_at.slice(0, 10)))].sort().reverse()
 
-  // Collect unique dates as YYYY-MM-DD strings
-  const dateSet = new Set(logs.map((l) => l.created_at.slice(0, 10)))
+  let streak = 1
+  let currentDate = new Date(dates[0])
+  currentDate.setHours(0, 0, 0, 0)
 
-  const toKey = (d: Date) => d.toISOString().slice(0, 10)
+  for (let i = 1; i < dates.length; i++) {
+    const prevDate = new Date(dates[i])
+    prevDate.setHours(0, 0, 0, 0)
 
-  // If today has no entry, streak is 0
-  if (!dateSet.has(toKey(today))) return 0
+    const diffDays = (currentDate.getTime() - prevDate.getTime()) / (1000 * 60 * 60 * 24)
 
-  let streak = 0
-  const cursor = new Date(today)
-
-  while (dateSet.has(toKey(cursor))) {
-    streak++
-    cursor.setDate(cursor.getDate() - 1)
+    if (diffDays === 1) {
+      streak++
+      currentDate = prevDate
+    } else {
+      break
+    }
   }
 
   return streak

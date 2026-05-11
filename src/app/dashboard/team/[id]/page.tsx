@@ -3,11 +3,12 @@
 import { use, useEffect, useCallback, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import dynamic from 'next/dynamic'
+import Image from 'next/image'
 import { ArrowLeft, User } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { Avatar, AvatarFallback } from '@/components/ui/avatar'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { LoadingSkeleton } from '@/components/dashboard/shared/loading-skeleton'
 import { ErrorState } from '@/components/dashboard/shared/error-state'
 import { RecentTasksTable } from '@/components/dashboard/shared/recent-tasks-table'
@@ -20,6 +21,7 @@ import {
   fetchProfileById,
   fetchUserWellbeingLogs,
 } from '@/lib/dashboard/queries'
+import { getAvatarUrl } from '@/lib/upload-avatar'
 import type { AsyncState, Profile, MoodTrendPoint } from '@/types/dashboard'
 
 // Lazy-load recharts
@@ -181,11 +183,15 @@ function ProfileCard({ profile }: { profile: Profile }) {
   const initials = getInitials(profile.full_name)
   const roleLabel =
     profile.role === 'manager' ? 'Manager' : profile.role === 'admin' ? 'Admin' : 'Employee'
+  const avatarUrl = getAvatarUrl(profile.avatar_url)
 
   return (
     <Card>
       <CardContent className="flex items-center gap-4 pt-5">
         <Avatar className="size-14 border border-border">
+          {avatarUrl ? (
+            <AvatarImage src={avatarUrl} alt={`Foto profil ${profile.full_name}`} />
+          ) : null}
           <AvatarFallback className="bg-secondary text-secondary-foreground text-lg font-semibold">
             {initials}
           </AvatarFallback>

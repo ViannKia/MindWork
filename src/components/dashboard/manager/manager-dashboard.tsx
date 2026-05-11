@@ -1,8 +1,18 @@
 'use client'
 
-import { useCallback } from 'react'
+import { useState, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog'
 import { DashboardHeader } from '../shared/dashboard-header'
 import { TeamProductivityTable } from './team-productivity-table'
 import { BurnoutAlertList } from './burnout-alert-list'
@@ -16,8 +26,13 @@ interface ManagerDashboardProps {
 
 export function ManagerDashboard({ profile }: ManagerDashboardProps) {
   const router = useRouter()
+  const [logoutDialogOpen, setLogoutDialogOpen] = useState(false)
 
-  const handleLogout = useCallback(async () => {
+  const handleLogoutClick = useCallback(() => {
+    setLogoutDialogOpen(true)
+  }, [])
+
+  const handleLogoutConfirm = useCallback(async () => {
     await supabase.auth.signOut()
     router.push('/login')
   }, [router])
@@ -31,7 +46,7 @@ export function ManagerDashboard({ profile }: ManagerDashboardProps) {
 
   return (
     <div className="min-h-screen bg-background">
-      <DashboardHeader profile={profile} badge="Manager" onLogout={handleLogout} />
+      <DashboardHeader profile={profile} badge="Manager" onLogout={handleLogoutClick} />
 
       <main className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
         {/* Welcome */}
@@ -66,6 +81,24 @@ export function ManagerDashboard({ profile }: ManagerDashboardProps) {
           />
         </div>
       </main>
+
+      {/* Logout Confirmation Dialog */}
+      <AlertDialog open={logoutDialogOpen} onOpenChange={setLogoutDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Logout dari MindWork?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Yakin ingin keluar dari aplikasi? Anda harus login kembali untuk mengakses dashboard.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Batal</AlertDialogCancel>
+            <AlertDialogAction onClick={handleLogoutConfirm}>
+              Ya, Logout
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   )
 }

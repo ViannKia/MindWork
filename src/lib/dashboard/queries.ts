@@ -91,7 +91,7 @@ export async function updateAvatarUrl(
 export async function fetchProfileById(id: string): Promise<Profile> {
   const { data, error } = await supabase
     .from('profiles')
-    .select('id, full_name, role, department, manager_id')
+    .select('id, full_name, role, department, manager_id, avatar_url')
     .eq('id', id)
     .single()
 
@@ -106,7 +106,7 @@ export async function fetchProfileById(id: string): Promise<Profile> {
 export async function fetchTeamMembers(managerId: string): Promise<Profile[]> {
   const { data, error } = await supabase
     .from('profiles')
-    .select('id, full_name, role, department, manager_id')
+    .select('id, full_name, role, department, manager_id, avatar_url')
     .eq('manager_id', managerId)
 
   if (error) throw new Error(error.message)

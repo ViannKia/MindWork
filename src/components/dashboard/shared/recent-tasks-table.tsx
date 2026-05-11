@@ -274,7 +274,7 @@ export function RecentTasksTable({ userId, refreshTrigger }: RecentTasksTablePro
                               <SelectTrigger
                                 size="sm"
                                 className={cn(
-                                  'w-[110px] border-0 font-medium',
+                                  'w-fit border-0 font-medium gap-1 px-2',
                                   isUpdating && 'opacity-50 cursor-wait'
                                 )}
                               >
