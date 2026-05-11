@@ -3,7 +3,6 @@
 import { use, useEffect, useCallback, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import dynamic from 'next/dynamic'
-import Image from 'next/image'
 import { ArrowLeft, User } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -262,7 +261,10 @@ function TrendChart({ title, data, domain, ticks, label }: TrendChartProps) {
                   borderRadius: '6px',
                   fontSize: '12px',
                 }}
-                formatter={(value: number) => [value ?? '—', label]}
+                formatter={(value) => {
+                  const numValue = typeof value === 'number' ? value : null
+                  return [numValue ?? '—', label]
+                }}
               />
               <Line
                 type="monotone"

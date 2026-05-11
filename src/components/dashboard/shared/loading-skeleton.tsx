@@ -6,9 +6,14 @@ interface LoadingSkeletonProps {
   className?: string
 }
 
-function SkeletonBox({ className }: { className?: string }) {
+interface SkeletonBoxProps {
+  className?: string
+  style?: React.CSSProperties
+}
+
+function SkeletonBox({ className, style }: SkeletonBoxProps) {
   return (
-    <div className={cn('animate-pulse rounded bg-muted', className)} />
+    <div className={cn('animate-pulse rounded bg-muted', className)} style={style} />
   )
 }
 
@@ -56,15 +61,18 @@ export function LoadingSkeleton({ variant, rows = 3, className }: LoadingSkeleto
   }
 
   if (variant === 'chart') {
+    // Generate random heights once, not on every render
+    const heights = Array.from({ length: 7 }, () => `${30 + Math.random() * 70}%`)
+    
     return (
       <div className={cn('rounded-lg border border-border bg-card p-5 space-y-4', className)}>
         <SkeletonBox className="h-4 w-40" />
         <div className="flex items-end gap-2 h-40">
-          {Array.from({ length: 7 }).map((_, i) => (
+          {heights.map((height, i) => (
             <SkeletonBox
               key={i}
               className="flex-1"
-              style={{ height: `${30 + Math.random() * 70}%` }}
+              style={{ height }}
             />
           ))}
         </div>

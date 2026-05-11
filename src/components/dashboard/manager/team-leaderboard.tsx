@@ -7,8 +7,8 @@ import { LoadingSkeleton } from '../shared/loading-skeleton'
 import { ErrorState } from '../shared/error-state'
 import { supabase } from '@/lib/supabase'
 import { fetchTeamMembers, fetchTeamTasks } from '@/lib/dashboard/queries'
-import { calculateProductivityScore, getScoreColor } from '@/lib/dashboard/calculations'
-import type { Profile, Task } from '@/types/dashboard'
+import { calculateProductivityScore } from '@/lib/dashboard/calculations'
+import type { Profile } from '@/types/dashboard'
 import { cn } from '@/lib/utils'
 
 interface TeamLeaderboardProps {
@@ -121,7 +121,7 @@ export function TeamLeaderboard({ managerId, isAdmin = false }: TeamLeaderboardP
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <ErrorState message={error} />
+          <ErrorState message={error} onRetry={() => window.location.reload()} />
         </CardContent>
       </Card>
     )

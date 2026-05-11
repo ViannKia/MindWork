@@ -42,9 +42,10 @@ export function ForgotPasswordForm() {
       if (error) throw error;
 
       setSuccess(true);
-    } catch (err: any) {
-      const errorMessage =
-        err?.message || "Terjadi kesalahan. Silakan coba lagi.";
+    } catch (err) {
+      const errorMessage = err instanceof Error
+        ? err.message
+        : "Terjadi kesalahan. Silakan coba lagi.";
       setError(errorMessage);
     } finally {
       setLoading(false);

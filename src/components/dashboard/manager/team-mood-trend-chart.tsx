@@ -131,10 +131,10 @@ export function TeamMoodTrendChart({ managerId, isAdmin = false }: TeamMoodTrend
                     borderRadius: '6px',
                     fontSize: '12px',
                   }}
-                  formatter={(value: number) => [
-                    value ? value.toFixed(1) : '—',
-                    'Avg Mood',
-                  ]}
+                  formatter={(value) => {
+                    const numValue = typeof value === 'number' ? value : null
+                    return [numValue ? numValue.toFixed(1) : '—', 'Avg Mood']
+                  }}
                 />
                 <Line
                   type="monotone"

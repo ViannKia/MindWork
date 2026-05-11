@@ -35,8 +35,9 @@ export function useAuth() {
       
       window.location.href = "/dashboard";
       return { success: true };
-    } catch (err: any) {
-      const humanMessage = getHumanReadableMessage(err.message);
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Terjadi kesalahan'
+      const humanMessage = getHumanReadableMessage(errorMessage);
       setError(humanMessage);
       return { success: false, message: humanMessage };
     } finally {
@@ -63,8 +64,9 @@ export function useAuth() {
       if (error) throw error;
       
       return { success: true, message: "Pendaftaran berhasil! Silakan cek email untuk verifikasi." };
-    } catch (err: any) {
-      const humanMessage = getHumanReadableMessage(err.message);
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Terjadi kesalahan'
+      const humanMessage = getHumanReadableMessage(errorMessage);
       setError(humanMessage);
       return { success: false, message: humanMessage };
     } finally {

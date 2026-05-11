@@ -12,8 +12,8 @@ export const DEPARTMENTS = [
 
 export const profileSchema = z.object({
   full_name: z.string().min(3, 'Nama minimal 3 karakter'),
-  department: z.enum(DEPARTMENTS, {
-    errorMap: () => ({ message: 'Pilih department yang valid' }),
+  department: z.enum(DEPARTMENTS).refine((val) => DEPARTMENTS.includes(val), {
+    message: 'Pilih department yang valid',
   }),
 })
 

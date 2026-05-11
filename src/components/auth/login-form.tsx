@@ -1,4 +1,5 @@
 "use client";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
@@ -23,6 +24,7 @@ interface LoginFormProps {
 }
 
 export function LoginForm({ onToggleMode, isTransitioning }: LoginFormProps) {
+  const router = useRouter();
   const { login, loading, error, setError } = useAuth();
 
   const {
@@ -37,8 +39,8 @@ export function LoginForm({ onToggleMode, isTransitioning }: LoginFormProps) {
     const result = await login(data);
 
     if (result.success) {
-      // Login sukses
-      window.location.href = "/dashboard";
+      // Login sukses - redirect menggunakan router
+      router.push("/dashboard")
     } else {
       // Login gagal, kasih pesan error
       setError(result.message ?? null);

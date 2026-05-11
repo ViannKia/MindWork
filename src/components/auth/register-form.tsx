@@ -31,7 +31,7 @@ export function RegisterForm({
   onToggleMode,
   isTransitioning,
 }: RegisterFormProps) {
-  const { register: registerUser, loading, error, setError } = useAuth();
+  const { register: registerUser, loading, error } = useAuth();
   const [successMsg, setSuccessMsg] = useState("");
 
   const {

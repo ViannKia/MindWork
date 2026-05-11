@@ -63,8 +63,11 @@ export function ResetPasswordForm() {
       setTimeout(() => {
         router.replace("/login");
       }, 2000);
-    } catch (err: any) {
-      setError(err?.message || "Terjadi kesalahan. Silakan coba lagi.");
+    } catch (err) {
+      const errorMessage = err instanceof Error
+        ? err.message
+        : "Terjadi kesalahan. Silakan coba lagi.";
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }

@@ -31,7 +31,7 @@ import {
 } from '@/components/ui/alert-dialog'
 import { LoadingSkeleton } from './loading-skeleton'
 import { ErrorState } from './error-state'
-import { StatusBadge, getStatusConfig } from './status-badge'
+import { StatusBadge } from './status-badge'
 import { supabase } from '@/lib/supabase'
 import { fetchRecentTasks, updateTaskStatus, startTask, stopTask, cancelTask } from '@/lib/dashboard/queries'
 import type { AsyncState, Task, TaskStatus } from '@/types/dashboard'
@@ -247,7 +247,6 @@ export function RecentTasksTable({ userId, refreshTrigger }: RecentTasksTablePro
               </TableHeader>
               <TableBody>
                 {tasks.map((task) => {
-                  const statusConfig = getStatusConfig(task.status)
                   const isUpdating = updatingTaskId === task.id
 
                   return (
